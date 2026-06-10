@@ -30,16 +30,12 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
-    private final VerificationCodeService verificationCodeService;
 
     /**
      * 用户注册
      */
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        // 验证验证码
-        verificationCodeService.verifyCode(request.getPhone(), request.getVerificationCode());
-
         // 检查用户名是否已存在
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new BadRequestException("Username already exists");
@@ -50,16 +46,10 @@ public class AuthService {
             throw new BadRequestException("Email already exists");
         }
 
-        // 检查手机号是否已存在
-        if (userRepository.existsByPhone(request.getPhone())) {
-            throw new BadRequestException("Phone number already exists");
-        }
-
         // 创建新用户
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
-                .phone(request.getPhone())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .nickname(request.getNickname() != null ? request.getNickname() : request.getUsername())
                 .status(1)

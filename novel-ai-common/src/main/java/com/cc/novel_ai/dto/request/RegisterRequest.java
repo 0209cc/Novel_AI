@@ -2,7 +2,6 @@ package com.cc.novel_ai.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,14 +28,6 @@ public class RegisterRequest {
     @NotBlank(message = "Password is required")
     @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters")
     private String password;
-
-    @NotBlank(message = "Phone is required")
-    @Pattern(regexp = "^1[3-9]\\d{9}$", message = "Phone number is not valid")
-    private String phone;
-
-    @NotBlank(message = "Verification code is required")
-    @Pattern(regexp = "^\\d{6}$", message = "Verification code must be 6 digits")
-    private String verificationCode;
 
     private String nickname;
 }

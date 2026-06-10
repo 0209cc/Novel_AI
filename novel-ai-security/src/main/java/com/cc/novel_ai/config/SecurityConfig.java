@@ -36,12 +36,12 @@ public class SecurityConfig {
                 // 配置请求授权
                 .authorizeHttpRequests(auth -> auth
                         // 公开访问的端点
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/posts").permitAll()
-                        .requestMatchers("/api/posts/{id}").permitAll()
-                        .requestMatchers("/api/posts/user/**").permitAll()
-                        .requestMatchers("/api/posts/*/comments").permitAll()
-                        .requestMatchers("/api/comments/*/replies").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/posts").permitAll()
+                        .requestMatchers("/posts/{id}").permitAll()
+                        .requestMatchers("/posts/user/**").permitAll()
+                        .requestMatchers("/posts/*/comments").permitAll()
+                        .requestMatchers("/comments/*/replies").permitAll()
                         .requestMatchers("/files/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 

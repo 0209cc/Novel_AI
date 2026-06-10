@@ -20,8 +20,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "users", indexes = {
         @Index(name = "idx_users_username", columnList = "username"),
-        @Index(name = "idx_users_email", columnList = "email"),
-        @Index(name = "idx_users_phone", columnList = "phone")
+        @Index(name = "idx_users_email", columnList = "email")
 })
 public class User {
 
@@ -34,9 +33,6 @@ public class User {
 
     @Column(nullable = false, unique = true, length = 100)
     private String email;
-
-    @Column(length = 20)
-    private String phone;
 
     @Column(nullable = false)
     private String password;
