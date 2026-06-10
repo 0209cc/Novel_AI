@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PostCreateRequest {
 
-    @NotBlank(message = "Title is required")
-    @Size(max = 200, message = "Title must not exceed 200 characters")
+    @NotBlank(message = "标题不能为空")
+    @Size(max = 200, message = "标题长度不能超过200个字符")
     private String title;
 
-    @NotBlank(message = "Content is required")
+    @NotBlank(message = "内容不能为空")
     private String content;
 }

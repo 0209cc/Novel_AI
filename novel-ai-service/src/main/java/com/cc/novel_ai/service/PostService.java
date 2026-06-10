@@ -144,7 +144,7 @@ public class PostService {
         // 验证权限
         User currentUser = userService.getCurrentUser();
         if (!post.getUser().getId().equals(currentUser.getId())) {
-            throw new BadRequestException("You can only edit your own posts");
+            throw new BadRequestException("只能编辑自己的帖子");
         }
 
         // 更新帖子内容
@@ -209,7 +209,7 @@ public class PostService {
         // 验证权限
         User currentUser = userService.getCurrentUser();
         if (!post.getUser().getId().equals(currentUser.getId())) {
-            throw new BadRequestException("You can only delete your own posts");
+            throw new BadRequestException("只能删除自己的帖子");
         }
 
         // 软删除

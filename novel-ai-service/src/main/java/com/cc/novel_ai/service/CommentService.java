@@ -57,7 +57,7 @@ public class CommentService {
             }
             // 验证父评论是否属于同一帖子
             if (!parent.getPost().getId().equals(postId)) {
-                throw new BadRequestException("Parent comment does not belong to this post");
+                throw new BadRequestException("父评论不属于该帖子");
             }
         }
 
@@ -133,7 +133,7 @@ public class CommentService {
         // 验证权限
         User currentUser = userService.getCurrentUser();
         if (!comment.getUser().getId().equals(currentUser.getId())) {
-            throw new BadRequestException("You can only delete your own comments");
+            throw new BadRequestException("只能删除自己的评论");
         }
 
         // 软删除

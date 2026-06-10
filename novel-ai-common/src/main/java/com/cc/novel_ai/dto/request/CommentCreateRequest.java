@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CommentCreateRequest {
 
-    @NotBlank(message = "Content is required")
+    @NotBlank(message = "评论内容不能为空")
     private String content;
 
     /**

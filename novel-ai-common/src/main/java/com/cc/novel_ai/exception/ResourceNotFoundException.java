@@ -10,6 +10,6 @@ public class ResourceNotFoundException extends RuntimeException {
     }
 
     public ResourceNotFoundException(String resourceName, Long id) {
-        super(String.format("%s not found with id: %d", resourceName, id));
+        super(String.format("%s不存在，ID: %d", resourceName, id));
     }
 }

@@ -4,6 +4,7 @@ import com.cc.novel_ai.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -52,6 +53,26 @@ public class SecurityConfig {
                 // 无状态会话管理
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                // 配置异常处理，确保所有错误都返回 JSON 格式
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(401);
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setCharacterEncoding("UTF-8");
+                            response.getWriter().write(
+                                    "{\"code\":401,\"success\":false,\"message\":\"未登录或登录已过期\",\"data\":null}"
+                            );
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(403);
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setCharacterEncoding("UTF-8");
+                            response.getWriter().write(
+                                    "{\"code\":403,\"success\":false,\"message\":\"无权访问该资源\",\"data\":null}"
+                            );
+                        })
                 )
 
                 // 添加 JWT 过滤器

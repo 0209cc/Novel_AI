@@ -53,7 +53,7 @@ public class FileStorageService {
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (Exception ex) {
-            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
+            throw new FileStorageException("无法创建文件存储目录", ex);
         }
     }
 
@@ -67,18 +67,18 @@ public class FileStorageService {
         // 验证文件类型
         String contentType = file.getContentType();
         if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType.toLowerCase())) {
-            throw new FileStorageException("File type not allowed. Allowed types: JPEG, PNG, GIF, WEBP");
+            throw new FileStorageException("不支持的文件类型，仅允许: JPEG、PNG、GIF、WEBP");
         }
 
         // 验证文件大小
         if (file.getSize() > MAX_FILE_SIZE) {
-            throw new FileStorageException("File size exceeds maximum limit of 5MB");
+            throw new FileStorageException("文件大小超出5MB限制");
         }
 
         // 清理文件名
         String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
         if (originalFilename.contains("..")) {
-            throw new FileStorageException("Filename contains invalid path sequence " + originalFilename);
+            throw new FileStorageException("文件名包含非法路径字符: " + originalFilename);
         }
 
         try {
@@ -103,7 +103,7 @@ public class FileStorageService {
             return accessUrl;
 
         } catch (IOException ex) {
-            throw new FileStorageException("Could not store file " + originalFilename + ". Please try again!", ex);
+            throw new FileStorageException("文件存储失败: " + originalFilename, ex);
         }
     }
 
@@ -122,17 +122,17 @@ public class FileStorageService {
 
             // 验证路径安全性
             if (!normalizedPath.startsWith(this.fileStorageLocation)) {
-                throw new FileStorageException("Cannot access file outside of configured directory");
+                throw new FileStorageException("无法访问配置目录之外的文件");
             }
 
             Resource resource = new UrlResource(normalizedPath.toUri());
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new FileStorageException("File not found " + filename);
+                throw new FileStorageException("文件不存在: " + filename);
             }
         } catch (MalformedURLException ex) {
-            throw new FileStorageException("File not found " + filename, ex);
+            throw new FileStorageException("文件不存在: " + filename, ex);
         }
     }
 

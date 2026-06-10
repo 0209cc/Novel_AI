@@ -38,12 +38,12 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
         // 检查用户名是否已存在
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new BadRequestException("Username already exists");
+            throw new BadRequestException("用户名已存在");
         }
 
         // 检查邮箱是否已存在
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("Email already exists");
+            throw new BadRequestException("邮箱已注册");
         }
 
         // 创建新用户

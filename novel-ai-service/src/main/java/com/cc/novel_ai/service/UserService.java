@@ -38,7 +38,7 @@ public class UserService {
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResourceNotFoundException("User not authenticated");
+            throw new ResourceNotFoundException("用户未登录");
         }
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
