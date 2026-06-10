@@ -18,7 +18,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      * 获取帖子的顶级评论（分页）
      */
     Page<Comment> findByPostIdAndParentIdIsNullAndStatusOrderByCreatedAtDesc(
-            Long postId, Integer parentId, Integer status, Pageable pageable);
+            Long postId, Integer status, Pageable pageable);
 
     /**
      * 获取评论的回复列表

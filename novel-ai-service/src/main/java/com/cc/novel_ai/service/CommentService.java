@@ -91,7 +91,7 @@ public class CommentService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         Page<Comment> commentPage = commentRepository.findByPostIdAndParentIdIsNullAndStatusOrderByCreatedAtDesc(
-                postId, null, 1, pageable);
+                postId, 1, pageable);
 
         return commentPage.map(comment -> {
             long replyCount = commentRepository.countByPostIdAndStatus(postId, 1);
