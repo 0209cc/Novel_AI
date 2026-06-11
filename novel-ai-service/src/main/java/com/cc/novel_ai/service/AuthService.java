@@ -62,12 +62,17 @@ public class AuthService {
         UserDetailsImpl userDetails = UserDetailsImpl.fromUser(user);
         String token = tokenProvider.generateToken(userDetails);
 
+        // 保存Token到用户记录
+        user.setCurrentToken(token);
+        userRepository.save(user);
+
         return new AuthResponse(token, user.getId(), user.getUsername());
     }
 
     /**
      * 用户登录
      */
+    @Transactional
     public AuthResponse login(LoginRequest request) {
         // 认证
         Authentication authentication = authenticationManager.authenticate(
@@ -79,6 +84,11 @@ public class AuthService {
         // 生成 JWT Token
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         String token = tokenProvider.generateToken(authentication);
+
+        // 保存当前Token到用户记录（单点登录：新登录会覆盖旧Token）
+        User user = userRepository.findById(userDetails.getId()).orElseThrow();
+        user.setCurrentToken(token);
+        userRepository.save(user);
 
         log.info("User logged in successfully: {}", request.getUsername());
 

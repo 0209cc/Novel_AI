@@ -43,6 +43,12 @@ public class User {
     @Column(length = 500)
     private String avatarUrl;
 
+    /**
+     * 当前有效的JWT Token，用于单点登录控制
+     */
+    @Column(length = 500)
+    private String currentToken;
+
     @Column(nullable = false)
     @Builder.Default
     private Integer status = 1;

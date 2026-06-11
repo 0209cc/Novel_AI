@@ -13,6 +13,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
@@ -239,6 +240,22 @@ public class GlobalExceptionHandler {
                         .code(ErrorCode.BAD_REQUEST.getCode())
                         .success(false)
                         .message("缺少必要参数: " + ex.getRequestPartName())
+                        .traceId(traceId)
+                        .build());
+    }
+
+    /**
+     * 参数类型不匹配异常
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<Void>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String traceId = generateTraceId();
+        log.warn("[{}] 参数类型错误: {}={}", traceId, ex.getName(), ex.getValue());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.<Void>builder()
+                        .code(ErrorCode.BAD_REQUEST.getCode())
+                        .success(false)
+                        .message("参数类型错误: " + ex.getName() + " 应为数字类型")
                         .traceId(traceId)
                         .build());
     }

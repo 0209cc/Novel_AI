@@ -1,5 +1,7 @@
 package com.cc.novel_ai.security;
 
+import com.cc.novel_ai.entity.User;
+import com.cc.novel_ai.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider tokenProvider;
     private final CustomUserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -37,12 +40,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 Long userId = tokenProvider.getUserIdFromToken(jwt);
 
-                UserDetails userDetails = userDetailsService.loadUserById(userId);
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                // 检查是否是当前有效的Token（单点登录控制）
+                User user = userRepository.findById(userId).orElse(null);
+                if (user != null && jwt.equals(user.getCurrentToken())) {
+                    UserDetails userDetails = userDetailsService.loadUserById(userId);
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    // Token已失效（用户在其他设备登录），返回401
+                    log.warn("Token已失效，用户已在其他设备登录: userId={}", userId);
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write("{\"code\":401,\"success\":false,\"message\":\"登录已过期，请重新登录\",\"data\":null}");
+                    return;
+                }
             }
         } catch (Exception ex) {
             log.error("Could not set user authentication in security context", ex);
