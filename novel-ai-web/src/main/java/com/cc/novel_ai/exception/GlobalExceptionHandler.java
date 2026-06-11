@@ -8,8 +8,12 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.HashMap;
@@ -171,6 +175,70 @@ public class GlobalExceptionHandler {
                         .code(ErrorCode.CONFLICT.getCode())
                         .success(false)
                         .message(ex.getMessage())
+                        .traceId(traceId)
+                        .build());
+    }
+
+    /**
+     * 请求方法不支持异常
+     */
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
+        String traceId = generateTraceId();
+        log.warn("[{}] 请求方法不支持: {} {}", traceId, ex.getMethod(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(ApiResponse.<Void>builder()
+                        .code(ErrorCode.BAD_REQUEST.getCode())
+                        .success(false)
+                        .message("不支持的请求方法: " + ex.getMethod())
+                        .traceId(traceId)
+                        .build());
+    }
+
+    /**
+     * Content-Type不支持异常
+     */
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
+        String traceId = generateTraceId();
+        log.warn("[{}] Content-Type不支持: {}", traceId, ex.getContentType());
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .body(ApiResponse.<Void>builder()
+                        .code(ErrorCode.BAD_REQUEST.getCode())
+                        .success(false)
+                        .message("不支持的请求格式，请使用 multipart/form-data")
+                        .traceId(traceId)
+                        .build());
+    }
+
+    /**
+     * 缺少请求参数异常
+     */
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingParam(MissingServletRequestParameterException ex) {
+        String traceId = generateTraceId();
+        log.warn("[{}] 缺少请求参数: {}", traceId, ex.getParameterName());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.<Void>builder()
+                        .code(ErrorCode.BAD_REQUEST.getCode())
+                        .success(false)
+                        .message("缺少必要参数: " + ex.getParameterName())
+                        .traceId(traceId)
+                        .build());
+    }
+
+    /**
+     * 缺少请求部分异常（文件上传）
+     */
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingPart(MissingServletRequestPartException ex) {
+        String traceId = generateTraceId();
+        log.warn("[{}] 缺少请求部分: {}", traceId, ex.getRequestPartName());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.<Void>builder()
+                        .code(ErrorCode.BAD_REQUEST.getCode())
+                        .success(false)
+                        .message("缺少必要参数: " + ex.getRequestPartName())
                         .traceId(traceId)
                         .build());
     }

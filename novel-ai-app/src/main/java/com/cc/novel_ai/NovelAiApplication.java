@@ -26,7 +26,6 @@ public class NovelAiApplication {
                 System.out.println("========================================");
                 System.out.println("    榴莲写作后台启动成功！");
                 System.out.println("    用时：" + duration + "ms");
-                System.out.println("    地址：http://localhost:8080/novel");
                 System.out.println("========================================");
                 System.out.println();
             }

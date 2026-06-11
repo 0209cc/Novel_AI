@@ -33,7 +33,7 @@ public class CommentController {
         CommentResponse response = commentService.createComment(postId, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Comment created successfully", response));
+                .body(ApiResponse.success("已发送", response));
     }
 
     /**
@@ -64,6 +64,6 @@ public class CommentController {
     @DeleteMapping("/comments/{id}")
     public ResponseEntity<ApiResponse<Object>> deleteComment(@PathVariable Long id) {
         commentService.deleteComment(id);
-        return ResponseEntity.ok(ApiResponse.success("Comment deleted successfully"));
+        return ResponseEntity.ok(ApiResponse.success("评论删除成功"));
     }
 }

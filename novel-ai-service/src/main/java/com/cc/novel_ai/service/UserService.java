@@ -1,5 +1,6 @@
 package com.cc.novel_ai.service;
 
+import com.cc.novel_ai.dto.request.UserUpdateRequest;
 import com.cc.novel_ai.dto.response.UserProfileResponse;
 import com.cc.novel_ai.entity.User;
 import com.cc.novel_ai.exception.ResourceNotFoundException;
@@ -60,6 +61,38 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserProfileResponse getCurrentUserProfile() {
         User user = getCurrentUser();
+        return mapToUserProfileResponse(user);
+    }
+
+    /**
+     * 更新当前用户信息（昵称、头像）
+     */
+    @Transactional
+    public UserProfileResponse updateCurrentUser(UserUpdateRequest request) {
+        User user = getCurrentUser();
+
+        if (request.getNickname() != null) {
+            user.setNickname(request.getNickname());
+        }
+        if (request.getAvatarUrl() != null) {
+            user.setAvatarUrl(request.getAvatarUrl());
+        }
+
+        user = userRepository.save(user);
+        log.info("用户信息更新成功: userId={}", user.getId());
+
+        return mapToUserProfileResponse(user);
+    }
+
+    /**
+     * 更新头像
+     */
+    @Transactional
+    public UserProfileResponse updateAvatar(String avatarUrl) {
+        User user = getCurrentUser();
+        user.setAvatarUrl(avatarUrl);
+        user = userRepository.save(user);
+        log.info("用户头像更新成功: userId={}", user.getId());
         return mapToUserProfileResponse(user);
     }
 
