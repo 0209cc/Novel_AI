@@ -2,14 +2,14 @@ package com.cc.novel_ai.controller;
 
 import com.cc.novel_ai.exception.ResourceNotFoundException;
 import com.cc.novel_ai.service.FileStorageService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.Duration;
 
 /**
  * 文件访问控制器
@@ -22,16 +22,19 @@ public class FileController {
     private final FileStorageService fileStorageService;
 
     /**
-     * 访问上传的图片
+     * 访问上传的图片（带缓存）
      */
-    @GetMapping("/images/{filename:.+}")
-    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
-        Resource resource = fileStorageService.loadFileAsResource(filename);
+    @GetMapping("/images/**")
+    public ResponseEntity<Resource> getFile(HttpServletRequest request) {
+        String fullPath = request.getRequestURI();
+        String filename = fullPath.substring(fullPath.indexOf("/images/") + 8);
 
+        Resource resource = fileStorageService.loadFileAsResource(filename);
         String contentType = determineContentType(filename);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
+                .cacheControl(CacheControl.maxAge(Duration.ofDays(7)))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }

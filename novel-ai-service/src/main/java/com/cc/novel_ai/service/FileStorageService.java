@@ -97,8 +97,8 @@ public class FileStorageService {
             // 复制文件
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            // 返回访问URL
-            String accessUrl = config.getUrlPrefix() + datePath + "/" + newFilename;
+            // 返回完整的访问URL
+            String accessUrl = config.getBaseUrl() + config.getUrlPrefix() + datePath + "/" + newFilename;
             log.info("File stored successfully: {}", accessUrl);
             return accessUrl;
 

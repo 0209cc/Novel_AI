@@ -23,4 +23,9 @@ public class FileStorageConfig {
      * 访问文件的URL前缀
      */
     private String urlPrefix = "/files/images/";
+
+    /**
+     * 服务器基础地址（用于生成完整的文件访问URL）
+     */
+    private String baseUrl = "http://localhost:8080";
 }
