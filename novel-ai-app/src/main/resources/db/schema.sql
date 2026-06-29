@@ -62,7 +62,27 @@ CREATE TABLE post_images (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
--- 4. 评论表
+-- 4. 提示词表
+-- ============================================
+CREATE TABLE prompts (
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id     BIGINT       NOT NULL,
+    title       VARCHAR(200) NOT NULL,
+    description TEXT         DEFAULT NULL,
+    content     TEXT         NOT NULL,
+    tags        VARCHAR(500) DEFAULT NULL,
+    view_count  INT          NOT NULL DEFAULT 0,
+    like_count  INT          NOT NULL DEFAULT 0,
+    status      TINYINT      NOT NULL DEFAULT 1 COMMENT '0=deleted, 1=published',
+    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_prompts_user_id (user_id),
+    INDEX idx_prompts_created_at (created_at DESC),
+    CONSTRAINT fk_prompts_user FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- 5. 评论表
 -- ============================================
 CREATE TABLE comments (
     id          BIGINT AUTO_INCREMENT PRIMARY KEY,
